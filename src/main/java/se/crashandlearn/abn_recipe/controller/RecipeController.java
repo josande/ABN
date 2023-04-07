@@ -10,6 +10,7 @@ import se.crashandlearn.abn_recipe.model.Recipe;
 import se.crashandlearn.abn_recipe.repository.RecipeRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -29,15 +30,25 @@ public class RecipeController {
     }
 
     @GetMapping("/recipes")
-    CollectionModel<EntityModel<Recipe>> all() {
+    CollectionModel<EntityModel<Recipe>> find(
+            @RequestParam Optional<Boolean> vegetarian,
+            @RequestParam Optional<Integer> servings,
+            @RequestParam Optional<List<String>> includesIngredients,
+            @RequestParam Optional<List<String>> excludesIngredient,
+            @RequestParam Optional<List<String>> instructionKeyword
+    ) {
 
-        List<EntityModel<Recipe>> recipes = repository.findAll().stream()
+        List<EntityModel<Recipe>> recipes = repository.findFiltered(vegetarian,
+                                                                    servings,
+                                                                    includesIngredients,
+                                                                    excludesIngredient,
+                                                                    instructionKeyword)
+                .stream()
                 .map(assembler::toModel)
                 .collect(Collectors.toList());
 
-        return CollectionModel.of(recipes, linkTo(methodOn(RecipeController.class).all()).withSelfRel());
+        return CollectionModel.of(recipes, linkTo(methodOn(RecipeController.class).find(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty())).withSelfRel());
     }
-
     @PostMapping("/recipes")
     ResponseEntity<?> newRecipe(@RequestBody Recipe newRecipe) {
      //   return repository.save(newRecipe);

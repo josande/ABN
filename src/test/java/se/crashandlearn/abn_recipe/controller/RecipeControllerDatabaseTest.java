@@ -10,6 +10,7 @@ import se.crashandlearn.abn_recipe.model.Recipe;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -28,9 +29,9 @@ class RecipeControllerDatabaseTest {
 
     @Test
     void givenRecipe_whenSave_thenCanFind() {
-        assertEquals(0, controller.all().getContent().size());
+        assertEquals(0, controller.find(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()).getContent().size());
         controller.newRecipe(largeVeggiePie);
-        assertEquals(1, controller.all().getContent().size());
+        assertEquals(1, controller.find(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()).getContent().size());
     }
     @Test
     void givenRecipe_whenSave_thenHaveId() {
@@ -46,7 +47,7 @@ class RecipeControllerDatabaseTest {
         controller.newRecipe(largeVeggiePie);
         controller.newRecipe(largeMeatPie);
 
-        assertEquals(4, controller.all().getContent().size());
+        assertEquals(4, controller.find(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()).getContent().size());
     }
     @Test
     void givenRecipeExists_whenUpdateIsSent_thenRecipeIsUpdated() {
