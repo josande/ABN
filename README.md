@@ -5,14 +5,13 @@ To start, navigate to the project base directory and run
 
 $*mvn spring-boot:run*
 
-The applciation curretnyl runs with a H2 in-memory database.  
+The application runs with a H2 in-memory database.  
 To change to a persistent storage, update settings in  
 [application.properties](src/main/resources/application.properties)  
 and add the corresponding database driver to the [pom.xml](pom.xml)
 
 
-*Objective*
-
+*Objective*  
 Create a standalone java application which allows users to manage their favourite recipes. It should 
 allow adding, updating, removing and fetching recipes. Additionally users should be able to filter 
 available recipes based on one or more of the following criteria: 
@@ -27,8 +26,8 @@ For example, the API should be able to handle the following search requests:
 • Recipes that can serve 4 persons and have “potatoes” as an ingredient  
 • Recipes without “salmon” as an ingredient that has “oven” in the instructions. 
 
-*Requirements*
 
+*Requirements*  
 Please ensure that we have some documentation about the architectural choices and also how to 
 run the application. The project is expected to be delivered as a GitHub (or any other public git 
 hosting) repository URL.
