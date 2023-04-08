@@ -10,6 +10,8 @@ To change to a persistent storage, update settings in
 [application.properties](src/main/resources/application.properties)  
 and add the corresponding database driver to the [pom.xml](pom.xml)
 
+Once started, generated API documentation can be found at [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html) 
+
 
 *Objective*  
 Create a standalone java application which allows users to manage their favourite recipes. It should 

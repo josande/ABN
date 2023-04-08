@@ -35,19 +35,21 @@ import static org.mockito.BDDMockito.given;
 @ExtendWith(MockitoExtension.class)
 public class RecipeControllerMvcTest {
     @Mock
-    RecipeRepository recipeRepository;
+    private RecipeRepository recipeRepository;
     @Spy
-    RecipeModelAssembler assembler;
+    private RecipeModelAssembler assembler;
 
     private JacksonTester<Recipe> jsonRecipe;
 
     @InjectMocks
-    RecipeController controller;
+    private RecipeController controller;
 
     private MockMvc mvc;
 
-    private final Recipe pumpkinPie = Recipe.builder().title("Pumpkin pie").vegetarian(true).servings(2).ingredients(new HashSet<>(List.of("Flour", "Pumpkin"))).instruction("* Knead Flour and Water to make Dough.\n* Knead Dough to make Raw Pie Crust\n* Remove seeds from pumpkin\n* Chop pumpkin into pieces\n* Cook and serve!").build();
+    private final Recipe pumpkinPie = Recipe.builder().title("Pumpkin pie").vegetarian(true).servings(2).ingredients(new HashSet<>(List.of("Flour", "Pumpkin"))).instruction("* Knead Flour and Water to make Dough.\n* Knead Dough to make Raw Pie Crust\n* Remove seeds from pumpkin\n* Chop pumpkin into pieces and add\n* Cook and serve!").build();
     private final Recipe pumpkinPieWithId = Recipe.builder().id(3L).title("Pumpkin pie").vegetarian(true).servings(2).ingredients(new HashSet<>(List.of("Flour", "Pumpkin"))).instruction("* Knead Flour and Water to make Dough.\n* Knead Dough to make Raw Pie Crust\n* Remove seeds from pumpkin\n* Chop pumpkin into pieces\n* Cook and serve!").build();
+    private final Recipe applePie = Recipe.builder().title("Apple pie").vegetarian(true).servings(2).ingredients(new HashSet<>(List.of("Flour", "Apple"))).instruction("* Knead Flour and Water to make Dough.\n* Knead Dough to make Raw Pie Crust\n* Chop applies into pieces and add\n* Cook and serve!").build();
+    private final Recipe applePieWithId = Recipe.builder().id(3L).title("Apple pie").vegetarian(true).servings(2).ingredients(new HashSet<>(List.of("Flour", "Apple"))).instruction("* Knead Flour and Water to make Dough.\n* Knead Dough to make Raw Pie Crust\n* Chop applies into pieces and add\n* Cook and serve!").build();
 
     @BeforeEach
     public void setup() {
@@ -55,7 +57,6 @@ public class RecipeControllerMvcTest {
 
         mvc = MockMvcBuilders.standaloneSetup(controller)
                 .setControllerAdvice(new RecipeControllerAdvice())
-               // .addFilters(new RecipeFilter())
                 .build();
     }
 
@@ -88,6 +89,8 @@ public class RecipeControllerMvcTest {
                 .andReturn().getResponse();
 
         // then
+
+        System.out.println(response.getContentAsString());
         assertEquals(HttpStatus.OK.value(), response.getStatus());
         assertTrue(response.getContentAsString().contains("\"href\":\"http://localhost/recipes/3\""));
         assertTrue(response.getContentAsString().contains("\"href\":\"http://localhost/recipes\""));
@@ -123,6 +126,55 @@ public class RecipeControllerMvcTest {
         //then
         assertEquals(HttpStatus.CREATED.value(), response.getStatus());
     }
+    @Test
+    public void givenRecipeExists_whenPut_thenUpdateRecipe() throws Exception {
+        //given
+        given(recipeRepository.findById(3L))
+                .willReturn(Optional.of(pumpkinPieWithId));
 
+        //when
+        Mockito.when(recipeRepository.save(applePieWithId)).thenReturn(applePieWithId);
 
+        MockHttpServletResponse response = mvc.perform(
+                        put("/recipes/3")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonRecipe.write(applePie).getJson()))
+                .andReturn().getResponse();
+
+        //then
+        assertTrue(response.getContentAsString().contains("Apple pie"));
+
+        assertEquals(HttpStatus.CREATED.value(), response.getStatus());
+    }
+    @Test
+    public void givenRecipeMissing_whenPut_thenCreateRecipe() throws Exception {
+        //given
+        given(recipeRepository.findById(10L))
+                .willReturn(Optional.empty());
+
+        //when
+        Mockito.when(recipeRepository.save(applePie)).thenReturn(applePie);
+
+        MockHttpServletResponse response = mvc.perform(
+                        put("/recipes/10")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonRecipe.write(applePie).getJson()))
+                .andReturn().getResponse();
+
+        //then
+        assertTrue(response.getContentAsString().contains("Apple pie"));
+        assertEquals(HttpStatus.CREATED.value(), response.getStatus());
+    }
+    @Test
+    public void whenDelete_thenReturnOK() throws Exception {
+
+        MockHttpServletResponse response = mvc.perform(
+                        delete("/recipes/1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonRecipe.write(pumpkinPie).getJson()))
+                .andReturn().getResponse();
+
+        //then
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+    }
 }

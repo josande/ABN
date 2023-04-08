@@ -72,14 +72,14 @@ class RecipeControllerDatabaseTest {
         Recipe pumpkinPieRecipe = (Recipe) ((EntityModel<?>) controller.newRecipe(mushroomPie).getBody()).getContent();
         controller.newRecipe(smallVeggiePie);
 
-        Recipe result = controller.getRecipe(pumpkinPieRecipe.getId()).getContent();
+        Recipe result = controller.getRecipeById(pumpkinPieRecipe.getId()).getContent();
 
         assertEquals(pumpkinPieRecipe, result);
     }
     @Test
     void givenRecipeMissing_whenGetRecipe_thenThrowRecipeNotFoundException() {
         try {
-            controller.getRecipe(123L);
+            controller.getRecipeById(123L);
             fail();
         } catch (RecipeNotFoundException ex) {
             assertEquals("Could not find Recipe 123", ex.getMessage());

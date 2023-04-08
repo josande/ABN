@@ -27,7 +27,7 @@ public class Recipe {
 
     private int servings;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="ingredient", joinColumns=@JoinColumn(name="recipe_id"))
     @Column(name="ingredient")
     private Set<String> ingredients =  new HashSet<>();
