@@ -19,6 +19,7 @@ import se.crashandlearn.abn_recipe.exception.RecipeControllerAdvice;
 import se.crashandlearn.abn_recipe.model.Recipe;
 import se.crashandlearn.abn_recipe.repository.RecipeRepository;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -176,5 +177,107 @@ public class RecipeControllerMvcTest {
 
         //then
         assertEquals(HttpStatus.OK.value(), response.getStatus());
+    }
+
+
+    @Test
+    public void whenPassingVegetarianFilterArguments_thenParametersAreSentToQuery() throws Exception {
+        // given
+        given(recipeRepository.findFiltered(Optional.of(true), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()))
+                .willReturn(Collections.emptyList());
+
+        // when
+        MockHttpServletResponse response = mvc.perform(
+                        get("/recipes?vegetarian=true")
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        // then
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        assertTrue(response.getContentAsString().contains("\"href\":\"http://localhost/recipes?vegetarian=true"));
+    }
+    @Test
+    public void whenPassingServingsFilterArguments_thenParametersAreSentToQuery() throws Exception {
+        // given
+        given(recipeRepository.findFiltered(Optional.empty(), Optional.of(2), Optional.empty(), Optional.empty(), Optional.empty()))
+                .willReturn(Collections.emptyList());
+
+        // when
+        MockHttpServletResponse response = mvc.perform(
+                        get("/recipes?servings=2")
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        // then
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        assertTrue(response.getContentAsString().contains("\"href\":\"http://localhost/recipes?servings=2"));
+    }
+
+    @Test
+    public void whenPassingIncludesIngredientFilterArguments_thenParametersAreSentToQuery() throws Exception {
+        // given
+        given(recipeRepository.findFiltered(Optional.empty(), Optional.empty(), Optional.of(List.of("carrot", "onion")), Optional.empty(), Optional.empty()))
+                .willReturn(Collections.emptyList());
+
+        // when
+        MockHttpServletResponse response = mvc.perform(
+                        get("/recipes?includesIngredients=carrot,onion")
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        // then
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        assertTrue(response.getContentAsString().contains("\"href\":\"http://localhost/recipes?includesIngredients=carrot&includesIngredients=onion"));
+    }
+
+    @Test
+    public void whenPassingExcludesIngredientFilterArguments_thenParametersAreSentToQuery() throws Exception {
+        // given
+        given(recipeRepository.findFiltered(Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(List.of("carrot", "onion")), Optional.empty()))
+                .willReturn(Collections.emptyList());
+
+        // when
+        MockHttpServletResponse response = mvc.perform(
+                        get("/recipes?excludesIngredients=carrot,onion")
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        // then
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        assertTrue(response.getContentAsString().contains("\"href\":\"http://localhost/recipes?excludesIngredients=carrot&excludesIngredients=onion"));
+    }
+
+    @Test
+    public void whenPassingInstructionKeywordsFilterArguments_thenParametersAreSentToQuery() throws Exception {
+        // given
+        given(recipeRepository.findFiltered(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(List.of("oven", "chop"))))
+                .willReturn(Collections.emptyList());
+
+        // when
+        MockHttpServletResponse response = mvc.perform(
+                        get("/recipes?instructionKeywords=oven,chop")
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        // then
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        assertTrue(response.getContentAsString().contains("\"href\":\"http://localhost/recipes?instructionKeywords=oven&instructionKeywords=chop"));
+    }
+
+    @Test
+    public void whenPassingMultipleFilterArguments_thenParametersAreSentToQuery() throws Exception {
+        // given
+        given(recipeRepository.findFiltered(Optional.of(true), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(List.of("oven", "chop"))))
+                .willReturn(Collections.emptyList());
+
+        // when
+        MockHttpServletResponse response = mvc.perform(
+                        get("/recipes?vegetarian=true&instructionKeywords=oven,chop")
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        // then
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        assertTrue(response.getContentAsString().contains("\"href\":\"http://localhost/recipes?vegetarian=true&instructionKeywords=oven&instructionKeywords=chop"));
     }
 }
