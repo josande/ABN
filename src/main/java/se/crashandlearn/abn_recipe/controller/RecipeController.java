@@ -67,12 +67,12 @@ public class RecipeController {
                 .collect(Collectors.toList());
 
         return CollectionModel.of(recipes, linkTo(methodOn(RecipeController.class)
-                    .find(Optional.empty(),
-                          Optional.empty(),
-                          Optional.empty(),
-                          Optional.empty(),
-                          Optional.empty()))
-                    .withSelfRel());
+                    .find(vegetarian,
+                          servings,
+                          includesIngredients,
+                          excludesIngredients,
+                          instructionKeywords))
+                    .withSelfRel().expand());
     }
     @PostMapping("/recipes")
     ResponseEntity<?> newRecipe(@RequestBody Recipe newRecipe) {
