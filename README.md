@@ -1,10 +1,19 @@
 Small application to fulfill the Objectives listed below.  
 The application was built using Spring boot and Maven 
 
-#### To start
+#### To start via maven
 
-To start, navigate to the project base directory and run  
+To start via maven, navigate to the project base directory and run  
 $*mvn spring-boot:run*  
+
+#### To start via Docker
+
+To start as Docker container, navigate to the project base directory and run  
+./mwnv install  
+docker build -t abn/recipe .  
+docker run -p 8080:8080 -e "JAVA_OPTS=-Ddebug -Xmx128m" abn/recipe  
+
+
 
 #### Database
 
@@ -26,12 +35,14 @@ Once started, generated API documentation can be found at [http://localhost:8080
 * Basic healthcheck using Spring Boot actuator, located at [http://localhost:8080/actuator/health]([http://localhost:8080/actuator/health)  
 
 #### This application is lacking some important features 'production ready'.  
+
 - No security/roles/access implemented. &rarr; Not mentioned in the task and therefor not clear what to add.  
 - No certificate for HTTPS. &rarr; Add certificate from CA and pass ssl-parameters and port via *application.properties* for example.
 - Logging &rarr; Currently using Spring Boot default logging, but no specific logging for API usage/requests etc.  
 
 
 ### Objective 
+
 Create a standalone java application which allows users to manage their favourite recipes. It should 
 allow adding, updating, removing and fetching recipes. Additionally users should be able to filter 
 available recipes based on one or more of the following criteria: 
