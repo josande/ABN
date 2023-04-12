@@ -9,7 +9,7 @@ $*mvn spring-boot:run*
 #### To start via Docker
 
 To start as Docker container, navigate to the project base directory and run  
-./mwnv install  
+./mvnw install
 docker build -t abn/recipe .  
 docker run -p 8080:8080 -e "JAVA_OPTS=-Ddebug -Xmx128m" abn/recipe  
 
